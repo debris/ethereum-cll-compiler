@@ -16,6 +16,8 @@
 "%" |
 "^" |
 "=" |
+"[" |
+"]" |
 ":"                     { return yytext[0]; }
 
 ">"                     { yylval.func = 1; return CMP; }
@@ -29,6 +31,7 @@
 "if"                    { return IF; }
 "else"                  { return ELSE; }
 "break"                 { return BREAK; }
+"array"                 { return ARRAY; }
 "stop"                  { return STOP; }
 
  /* names */

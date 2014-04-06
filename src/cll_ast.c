@@ -17,19 +17,23 @@ static unsigned cll_symhash(char *sym){
     return hash;
 }
 
-struct CLLSymbol *cll_lookup(char *sym){
+struct CLLSymbol *cll_lookup(int symboltype, char *sym, int size){
    struct CLLSymbol *sp = &symtab[cll_symhash(sym)%NHASH];
    int scount = NHASH;
    while (--scount >= 0){
         if (sp->name && !(strcmp(sp->name, sym))){
+            // free array if symboltype != sp->symboltype
             return sp;
         }
 
         if (!sp->name){
             sp->name = strdup(sym);
-            sp->value = 0;
-            sp->func = NULL;
-            sp->syms = NULL;
+            if (symboltype == 0){
+                sp->data.value = 0;
+            } else {
+                sp->data.array.array = malloc(sizeof(int) * size);
+            }
+            sp->symboltype = symboltype;
             return sp;
         }
         if (++sp >= symtab+NHASH) sp = symtab;
@@ -114,6 +118,23 @@ struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt){
     return stmts;
 }
 
+struct CLLNode *cll_newarray_access(struct CLLSymbol *s, int position){
+   struct CLLNode *a = cll_alloc_node();
+   a->nodetype = 'A';
+   a->data.array_access.symbol = s;
+   a->data.array_access.position = position;
+   return a;
+}
+
+struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, int position, struct CLLNode *v){
+    struct CLLNode *a =cll_alloc_node();
+    a->nodetype = 'G';
+    a->data.array_asgn.symbol = s;
+    a->data.array_asgn.position = position;
+    a->data.array_asgn.v = v;
+    return a;
+}
+
 int eval(struct CLLNode *a){
     int v = 0;
     int i;
@@ -122,11 +143,17 @@ int eval(struct CLLNode *a){
         return 0;
     }
 
+    //printf("node: %d\n", a->nodetype);
     switch (a->nodetype) {
         case 'K': v = a->data.number; break;
-        case 'N': v = a->data.symbol->value; break;
+        case 'N': v = a->data.symasgn.s->symboltype == 0 ? a->data.symbol->data.value : 1; break;
 
-        case '=': v = a->data.symasgn.s->value = eval(a->data.symasgn.v); break;
+        case '=': /*what if it is already assigned */ 
+                  //a->data.symasgn.s->symboltype = 0;
+                  v = a->data.symasgn.s->data.value = eval(a->data.symasgn.v); break;
+        case 'G':       
+                  v = a->data.array_asgn.symbol->data.array.array[a->data.array_asgn.position] = eval(a->data.array_asgn.v); break; 
+        case 'A': v = a->data.array_access.symbol->data.array.array[a->data.array_access.position]; break;
 
         case '+': v = eval(a->data.ast.l) + eval(a->data.ast.r); break;
         case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
@@ -164,7 +191,7 @@ int eval(struct CLLNode *a){
 
         case 'W': /* TODO */ break;
 
-        default: printf("internal erro: bad node %c\n", a->nodetype);
+        default: printf("internal erro: bad node %d\n", a->nodetype);
     }
     return v;
 }

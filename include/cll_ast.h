@@ -1,16 +1,21 @@
 #pragma once
 
 struct CLLSymbol {
+    int symboltype;  
     char *name;
-    int value;
-    struct CLLNode *func;
-    struct CLLSymlist *syms;
+    union {
+        int value;
+        struct {
+            int size;
+            int *array;
+        } array;
+    } data;
 };
 
 #define NHASH 9997
 struct CLLSymbol symtab[NHASH];
 
-struct CLLSymbol *cll_lookup(char *);
+struct CLLSymbol *cll_lookup(int symboltype, char *, int size);
 
 struct CLLSymlist {
     struct CLLSymbol *sym;
@@ -45,6 +50,17 @@ struct CLLNode{
             struct CLLNode **stmts;
         } stmts;
 
+        struct {
+            int position;
+            struct CLLSymbol *symbol;
+        } array_access;
+
+        struct {
+            int position;
+            struct CLLSymbol *symbol;
+            struct CLLNode *v;
+        } array_asgn;
+
     } data;
 };
 
@@ -56,6 +72,8 @@ struct CLLNode *cll_newintval(int i);
 struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v);
 struct CLLNode *cll_newstmts();
 struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt);
+struct CLLNode *cll_newarray_access(struct CLLSymbol *s, int position);
+struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, int position, struct CLLNode *v);
 
 int eval(struct CLLNode *);
 void treefree(struct CLLNode *);
