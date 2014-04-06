@@ -1,7 +1,7 @@
 #pragma once
 
 struct CLLSymbol {
-    enum { CLLSymbolInt, CLLSymbolArray } symboltype;  
+    enum { CLLSymbolInt, CLLSymbolArray, CLLSymbolStop } symboltype;  
     
     char *name;
     union {

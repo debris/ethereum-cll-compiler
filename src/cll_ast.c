@@ -150,8 +150,10 @@ struct CLLNode *cll_newstop(){
     return a;
 }
 
+
 int eval(struct CLLNode *a){
     int v = 0;
+    struct CLLSymbol result;
     int i;
     if (!a) {
         yyerror("internal error, null eval");
@@ -182,7 +184,7 @@ int eval(struct CLLNode *a){
         case '3': v = eval(a->data.ast.l) != eval(a->data.ast.r)? 1 : 0; break;
         case '4': v = eval(a->data.ast.l) == eval(a->data.ast.r)? 1 : 0; break;
         case '5': v = eval(a->data.ast.l) >= eval(a->data.ast.r)? 1 : 0; break;
-        case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)?1 : 0; break;
+        case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)? 1 : 0; break;
 
         case 'S':
             for (i = 0; i < a->data.stmts.count; ++i){
@@ -204,7 +206,13 @@ int eval(struct CLLNode *a){
                 }
                 break;
 
-        case 'W': /* TODO */ break;
+        case 'W':
+                if (a->data.flow.tl){ // good order? 
+                    while (eval(a->data.flow.cond) != 0){
+                        v = eval(a->data.flow.tl);
+                    }
+                }
+                break;
 
         default: printf("internal erro: bad node %d\n", a->nodetype);
     }

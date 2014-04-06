@@ -31,6 +31,7 @@
 "if"                    { return IF; }
 "else"                  { return ELSE; }
 "break"                 { return BREAK; }
+"while"                 { return WHILE; }
 "array"                 { return ARRAY; }
 "stop"                  { return STOP; }
 
