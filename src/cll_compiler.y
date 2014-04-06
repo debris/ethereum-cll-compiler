@@ -1,5 +1,7 @@
 %error-verbose
 %{
+#define YYPARSE_PARAM astDest
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/cll_compiler.h"
@@ -22,18 +24,21 @@ int yylex(void);
 %token <sval> NAME
 %token EOL
 %token <void> '+' '-' '*' '/' '='
-%type <node> exp stmt
+%type <node> input exp stmt
 %left UMINUS
 
 %%
 
 input:
-    | input stmt 
-    ;
+     stmt {
+        (*(struct CLLNode**)astDest) = $1;
+        YYACCEPT;
+     } 
+     ;
 
 
 stmt: exp EOL {
-        printf("cll >> %d\n", eval($1));
+        $$ = $1;
     }
     ;
 
