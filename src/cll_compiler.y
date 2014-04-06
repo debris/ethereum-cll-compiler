@@ -16,6 +16,7 @@ int yylex(void);
     struct CLLSymbol *symbol;
     struct CLLSymlist *sl;
     int intval;
+    int func;
     char *sval;
 }
 
@@ -23,9 +24,10 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '+' '-' '*' '/' '=' ':' IF STOP EOL BREAK
+%token <void> '+' '-' '*' '/' '%' '^' '=' ':' IF STOP EOL BREAK ELSE
 %type <node> input exp stmt stmts cond
 %left UMINUS
+%nonassoc <func> CMP
 
 %%
 
@@ -42,7 +44,8 @@ stmts:                          { $$ = cll_newstmts(); }
      
 
 stmt: exp EOL                   { $$ = $1;}
-    | IF cond ':' EOL stmts BREAK EOL { $$ = cll_newflow('I', $2, $5, NULL); }
+    | IF exp ':' EOL stmts BREAK EOL { $$ = cll_newflow('I', $2, $5, NULL); }
+    | IF exp ':' EOL stmts ELSE ':' EOL stmts BREAK EOL { $$ = cll_newflow('I', $2, $5, $9); }
     ;
 
 exp: NUMBER                     { $$ = cll_newintval($1); }
@@ -50,10 +53,13 @@ exp: NUMBER                     { $$ = cll_newintval($1); }
    | exp '-' exp                { $$ = cll_newast('-', $1, $3); }
    | exp '*' exp                { $$ = cll_newast('*', $1, $3); }
    | exp '/' exp                { $$ = cll_newast('/', $1, $3); }
+   | exp '%' exp                { $$ = cll_newast('%', $1, $3); }
+   | exp '^' exp                { $$ = cll_newast('^', $1, $3); }
    | '(' exp ')'                { $$ = $2; }
    | '-' exp %prec UMINUS       { $$ = cll_newast('M', $2, NULL); }
    | NAME                       { $$ = cll_newref(cll_lookup($1)); }
    | NAME '=' exp               { $$ = cll_newasgn(cll_lookup($1), $3); }
+   | exp CMP exp                { $$ = cll_newcmp($2, $1, $3); }
    ;
 
 cond: NUMBER                    { $$ = cll_newintval($1); }

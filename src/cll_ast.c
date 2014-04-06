@@ -56,6 +56,14 @@ struct CLLNode *cll_newast(int nodetype, struct CLLNode *l, struct CLLNode *r){
     return a;
 }
 
+struct CLLNode *cll_newcmp(int nodetype, struct CLLNode *l, struct CLLNode *r){
+    struct CLLNode *c = cll_alloc_node();
+    c->nodetype = '0' + nodetype;
+    c->data.ast.l = l;
+    c->data.ast.r = r;
+    return c;
+}
+
 struct CLLNode *cll_newflow(int nodetype, struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el){
     struct CLLNode *f = cll_alloc_node();
     f->nodetype = nodetype;
@@ -124,7 +132,15 @@ int eval(struct CLLNode *a){
         case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
         case '*': v = eval(a->data.ast.l) * eval(a->data.ast.r); break;
         case '/': v = eval(a->data.ast.l) / eval(a->data.ast.r); break;
+        case '%': v = eval(a->data.ast.l) % eval(a->data.ast.r); break;
+        case '^': v = eval(a->data.ast.l) ^ eval(a->data.ast.r); break;
         case 'M': v = -eval(a->data.ast.l); break;
+        case '1': v = eval(a->data.ast.l) > eval(a->data.ast.r) ? 1 : 0; break;
+        case '2': v = eval(a->data.ast.l) < eval(a->data.ast.r) ? 1 : 0; break;
+        case '3': v = eval(a->data.ast.l) != eval(a->data.ast.r)? 1 : 0; break;
+        case '4': v = eval(a->data.ast.l) == eval(a->data.ast.r)? 1 : 0; break;
+        case '5': v = eval(a->data.ast.l) >= eval(a->data.ast.r)? 1 : 0; break;
+        case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)?1 : 0; break;
 
         case 'S':
             for (i = 0; i < a->data.stmts.count; ++i){
@@ -161,6 +177,10 @@ void treefree(struct CLLNode *a){
         case '-':
         case '*':
         case '/':
+        case '^':
+        case '%':
+        case '1': case '2': case '3':
+        case '4': case '5': case '6':
             treefree(a->data.ast.r);
             
             /* one substree */

@@ -49,12 +49,13 @@ struct CLLNode{
 };
 
 struct CLLNode *cll_newast(int nodetype, struct CLLNode *l, struct CLLNode *r);
+struct CLLNode *cll_newcmp(int nodetype, struct CLLNode *l, struct CLLNode *r);
 struct CLLNode *cll_newflow(int nodetype, struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el);
 struct CLLNode *cll_newref(struct CLLSymbol *s);
 struct CLLNode *cll_newintval(int i);
 struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v);
 struct CLLNode *cll_newstmts();
-struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt); 
+struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt);
 
 int eval(struct CLLNode *);
 void treefree(struct CLLNode *);
