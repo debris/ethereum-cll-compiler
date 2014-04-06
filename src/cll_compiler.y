@@ -61,8 +61,8 @@ exp: NUMBER                             { $$ = cll_newintval($1); }
    | NAME '=' exp                       { $$ = cll_newasgn(cll_lookup(0, $1, 0), $3); }
    | exp CMP exp                        { $$ = cll_newcmp($2, $1, $3); }
    | NAME '=' ARRAY '(' NUMBER ')'      { $$ = cll_newref(cll_lookup(1, $1, $5));}
-   | NAME '[' NUMBER ']'                { $$ = cll_newarray_access(cll_lookup(1, $1, 0), $3);}
-   | NAME '[' NUMBER ']' '=' exp        { $$ = cll_newarray_asgn(cll_lookup(1, $1, 0), $3, $6);}
+   | NAME '[' exp ']'                   { $$ = cll_newarray_access(cll_lookup(1, $1, 0), $3);}
+   | NAME '[' exp ']' '=' exp           { $$ = cll_newarray_asgn(cll_lookup(1, $1, 0), $3, $6);}
    ;
 
 cond: NUMBER                    { $$ = cll_newintval($1); }

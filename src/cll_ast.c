@@ -118,7 +118,7 @@ struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt){
     return stmts;
 }
 
-struct CLLNode *cll_newarray_access(struct CLLSymbol *s, int position){
+struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *position){
    struct CLLNode *a = cll_alloc_node();
    a->nodetype = 'A';
    a->data.array_access.symbol = s;
@@ -126,7 +126,7 @@ struct CLLNode *cll_newarray_access(struct CLLSymbol *s, int position){
    return a;
 }
 
-struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, int position, struct CLLNode *v){
+struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position, struct CLLNode *v){
     struct CLLNode *a =cll_alloc_node();
     a->nodetype = 'G';
     a->data.array_asgn.symbol = s;
@@ -151,9 +151,8 @@ int eval(struct CLLNode *a){
         case '=': /*what if it is already assigned */ 
                   //a->data.symasgn.s->symboltype = 0;
                   v = a->data.symasgn.s->data.value = eval(a->data.symasgn.v); break;
-        case 'G':       
-                  v = a->data.array_asgn.symbol->data.array.array[a->data.array_asgn.position] = eval(a->data.array_asgn.v); break; 
-        case 'A': v = a->data.array_access.symbol->data.array.array[a->data.array_access.position]; break;
+        case 'G': v = a->data.array_asgn.symbol->data.array.array[eval(a->data.array_asgn.position)] = eval(a->data.array_asgn.v); break; 
+        case 'A': v = a->data.array_access.symbol->data.array.array[eval(a->data.array_access.position)]; break;
 
         case '+': v = eval(a->data.ast.l) + eval(a->data.ast.r); break;
         case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
