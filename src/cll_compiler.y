@@ -63,6 +63,7 @@ exp: NUMBER                             { $$ = cll_newintval($1); }
    | NAME '=' ARRAY '(' NUMBER ')'      { $$ = cll_newref(cll_lookup(1, $1, $5));}
    | NAME '[' exp ']'                   { $$ = cll_newarray_access(cll_lookup(1, $1, 0), $3);}
    | NAME '[' exp ']' '=' exp           { $$ = cll_newarray_asgn(cll_lookup(1, $1, 0), $3, $6);}
+   | STOP                               { $$ = cll_newstop();}
    ;
 
 cond: NUMBER                    { $$ = cll_newintval($1); }

@@ -135,6 +135,12 @@ struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position,
     return a;
 }
 
+struct CLLNode *cll_newstop(){
+    struct CLLNode *a = cll_alloc_node();
+    a->nodetype = 'Z';
+    return a;
+}
+
 int eval(struct CLLNode *a){
     int v = 0;
     int i;
@@ -145,6 +151,7 @@ int eval(struct CLLNode *a){
 
     //printf("node: %d\n", a->nodetype);
     switch (a->nodetype) {
+        case 'Z': /* STOP */ break; 
         case 'K': v = a->data.number; break;
         case 'N': v = a->data.symasgn.s->symboltype == 0 ? a->data.symbol->data.value : 1; break;
 

@@ -60,7 +60,6 @@ struct CLLNode{
             struct CLLSymbol *symbol;
             struct CLLNode *v;
         } array_asgn;
-
     } data;
 };
 
@@ -74,6 +73,7 @@ struct CLLNode *cll_newstmts();
 struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt);
 struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *position);
 struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position, struct CLLNode *v);
+struct CLLNode *cll_newstop();
 
 int eval(struct CLLNode *);
 void treefree(struct CLLNode *);
