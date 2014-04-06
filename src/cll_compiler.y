@@ -21,10 +21,9 @@ int yylex(void);
  /* declare tokens */
 %start input
 %token <intval> NUMBER
-%token <sval> NAME
-%token EOL
-%token <void> '+' '-' '*' '/' '='
-%type <node> input exp stmt
+%token <sval> NAME 
+%token <void> '+' '-' '*' '/' '=' ':' IF STOP EOL
+%type <node> input exp stmt stmts cond
 %left UMINUS
 
 %%
@@ -36,10 +35,13 @@ input:
      } 
      ;
 
+stmts:                          { $$ = cll_newstmts(); }
+     | stmts stmt               { $$ = cll_addstmt($1, $2); }
+     ;
+     
 
-stmt: exp EOL {
-        $$ = $1;
-    }
+stmt: exp EOL { $$ = $1;}
+    | IF cond ':' EOL stmts STOP EOL { $$ = cll_newflow('I', $2, $5, NULL); }
     ;
 
 exp: NUMBER                     { $$ = cll_newintval($1); }
@@ -52,6 +54,10 @@ exp: NUMBER                     { $$ = cll_newintval($1); }
    | NAME                       { $$ = cll_newref(cll_lookup($1)); }
    | NAME '=' exp               { $$ = cll_newasgn(cll_lookup($1), $3); }
    ;
+
+cond: NUMBER                    { $$ = cll_newintval($1); }
+    ;
+
 
 %%
 

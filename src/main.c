@@ -11,7 +11,7 @@ int main(){
         yyparse(&node);
         if (node != NULL){
             int a = eval(node);
-            treefree(node);
+            //treefree(node);
             printf("cll >> %d\n", a);
         } else {
             printf("cll >> error root is null\n");

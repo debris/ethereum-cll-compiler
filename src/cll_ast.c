@@ -87,8 +87,28 @@ struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v){
     return a;
 }
 
+struct CLLNode *cll_newstmts(){
+    struct CLLNode *s = cll_alloc_node();
+    s->nodetype = 'S';
+    s->data.stmts.count = 0;
+    s->data.stmts.size = 4;
+    s->data.stmts.stmts = calloc(sizeof(struct CLLNode*), s->data.stmts.size);
+    return s;
+}
+
+struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt){
+    if (stmts->data.stmts.count == stmts->data.stmts.size){
+        stmts->data.stmts.size *= 2;
+        stmts->data.stmts.stmts = realloc(stmts->data.stmts.stmts, stmts->data.stmts.size * sizeof(struct CLLNode *));
+    }
+    stmts->data.stmts.stmts[stmts->data.stmts.count] = newstmt;
+    ++stmts->data.stmts.count;
+    return stmts;
+}
+
 int eval(struct CLLNode *a){
     int v = 0;
+    int i;
     if (!a) {
         yyerror("internal error, null eval");
         return 0;
@@ -106,7 +126,26 @@ int eval(struct CLLNode *a){
         case '/': v = eval(a->data.ast.l) / eval(a->data.ast.r); break;
         case 'M': v = -eval(a->data.ast.l); break;
 
-        case 'I': /* TODO */ break;
+        case 'S':
+            for (i = 0; i < a->data.stmts.count; ++i){
+                eval(a->data.stmts.stmts[i]);
+            }
+            v = 1;
+            break;
+        case 'I': 
+                if (eval(a->data.flow.cond) != 0){
+                    if (a->data.flow.tl){
+                        v = eval(a->data.flow.tl);
+                    } else {
+                        v = 0;
+                    }
+                } else if (a->data.flow.el){
+                    v = eval(a->data.flow.el);
+                } else {
+                    v = 0;
+                }
+                break;
+
         case 'W': /* TODO */ break;
 
         default: printf("internal erro: bad node %c\n", a->nodetype);

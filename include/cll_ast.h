@@ -27,7 +27,7 @@ struct CLLNode{
 
         struct {
             struct CLLNode *cond;
-            struct CLLNode *tl;
+            struct CLLNode *tl; 
             struct CLLNode *el;
         } flow; /* if while */
 
@@ -39,6 +39,12 @@ struct CLLNode{
             struct CLLNode *v;
         } symasgn;
 
+        struct {
+            int count;
+            int size;
+            struct CLLNode **stmts;
+        } stmts;
+
     } data;
 };
 
@@ -47,6 +53,8 @@ struct CLLNode *cll_newflow(int nodetype, struct CLLNode *cond, struct CLLNode *
 struct CLLNode *cll_newref(struct CLLSymbol *s);
 struct CLLNode *cll_newintval(int i);
 struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v);
+struct CLLNode *cll_newstmts();
+struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt); 
 
 int eval(struct CLLNode *);
 void treefree(struct CLLNode *);

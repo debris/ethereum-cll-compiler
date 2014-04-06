@@ -13,7 +13,11 @@
 "/" |
 "(" |
 ")" |
-"="                     { return yytext[0]; }
+"=" |
+":"                     { return yytext[0]; }
+
+"if"                    { return IF; }
+"stop"                  { return STOP; }
 
  /* names */
 [0-9]+                  { yylval.intval = atoi(yytext); return NUMBER; }
