@@ -25,15 +25,15 @@ int main(){
 }
 
 void cll_setup(){
-    struct CLLSymbol *cll_tx_datan          = cll_lookup(0, "tx.datan", 0); 
-    struct CLLSymbol *cll_tx_value          = cll_lookup(0, "tx.value", 0); 
-    struct CLLSymbol *cll_tx_sender         = cll_lookup(0, "tx.sender", 0);
-    struct CLLSymbol *cll_contract_address  = cll_lookup(0, "contract.address", 0); 
-    struct CLLSymbol *cll_block_number      = cll_lookup(0, "block.number", 0); 
-    struct CLLSymbol *cll_block_difficulty  = cll_lookup(0, "block.difficulty", 0); 
-    struct CLLSymbol *cll_block_timestamp   = cll_lookup(0, "block.timestamp", 0);
-    struct CLLSymbol *cll_block_parenthash  = cll_lookup(0, "block.parenthash", 0);
-    struct CLLSymbol *cll_block_basefee     = cll_lookup(0, "block.basefee", 0);
+    struct CLLSymbol *cll_tx_datan          = cll_lookup_intval("tx.datan"); 
+    struct CLLSymbol *cll_tx_value          = cll_lookup_intval("tx.value"); 
+    struct CLLSymbol *cll_tx_sender         = cll_lookup_intval("tx.sender");
+    struct CLLSymbol *cll_contract_address  = cll_lookup_intval("contract.address"); 
+    struct CLLSymbol *cll_block_number      = cll_lookup_intval("block.number"); 
+    struct CLLSymbol *cll_block_difficulty  = cll_lookup_intval("block.difficulty"); 
+    struct CLLSymbol *cll_block_timestamp   = cll_lookup_intval("block.timestamp");
+    struct CLLSymbol *cll_block_parenthash  = cll_lookup_intval("block.parenthash");
+    struct CLLSymbol *cll_block_basefee     = cll_lookup_intval("block.basefee");
 
 
     cll_tx_datan->data.value                = 100;
@@ -46,8 +46,8 @@ void cll_setup(){
     cll_block_parenthash->data.value        = 100;
     cll_block_basefee->data.value           = 100;
 
-    struct CLLSymbol *cll_tx_data           = cll_lookup(1, "tx.data", 2000);
-    struct CLLSymbol *cll_contract_storage  = cll_lookup(1, "contract.storage", 2000);
+    struct CLLSymbol *cll_tx_data           = cll_lookup_array("tx.data", 2000);
+    struct CLLSymbol *cll_contract_storage  = cll_lookup_array("contract.storage", 2000);
 }
 
 

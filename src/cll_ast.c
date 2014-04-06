@@ -28,10 +28,10 @@ struct CLLSymbol *cll_lookup(int symboltype, char *sym, int size){
 
         if (!sp->name){
             sp->name = strdup(sym);
-            if (symboltype == 0){
+            if (symboltype == CLLSymbolInt){
                 sp->data.value = 0;
             } else {
-                sp->data.array.array = malloc(sizeof(int) * size);
+                sp->data.array.array = malloc(sizeof(int) * size); 
             }
             sp->symboltype = symboltype;
             return sp;
@@ -42,6 +42,15 @@ struct CLLSymbol *cll_lookup(int symboltype, char *sym, int size){
     abort();
     return NULL;
 }
+
+struct CLLSymbol *cll_lookup_intval(char *sym){
+   return cll_lookup(CLLSymbolInt, sym, 0); 
+}
+
+struct CLLSymbol *cll_lookup_array(char *sym, int size){
+    return cll_lookup(CLLSymbolArray, sym, size);
+}
+
 
 struct CLLNode *cll_alloc_node(){
     struct CLLNode *node = malloc(sizeof(struct CLLNode));
