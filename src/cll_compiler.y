@@ -8,6 +8,7 @@
 #include "../include/cll_ast.h"
 void yyerror(char *s);
 int yylex(void);
+
 %}
 
 %union {
@@ -22,7 +23,7 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '+' '-' '*' '/' '=' ':' IF STOP EOL
+%token <void> '+' '-' '*' '/' '=' ':' IF STOP EOL BREAK
 %type <node> input exp stmt stmts cond
 %left UMINUS
 
@@ -40,8 +41,8 @@ stmts:                          { $$ = cll_newstmts(); }
      ;
      
 
-stmt: exp EOL { $$ = $1;}
-    | IF cond ':' EOL stmts STOP EOL { $$ = cll_newflow('I', $2, $5, NULL); }
+stmt: exp EOL                   { $$ = $1;}
+    | IF cond ':' EOL stmts BREAK EOL { $$ = cll_newflow('I', $2, $5, NULL); }
     ;
 
 exp: NUMBER                     { $$ = cll_newintval($1); }
