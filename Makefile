@@ -5,7 +5,8 @@ OBJS 	= obj/bison.o obj/lex.o
 OBJS	+= $(SRCS:.c=.o)
 
 CC 	= gcc
-CFLAGS	= -g -Wall -pedantic -L/usr/local/Cellar/flex/2.5.37/lib
+CFLAGS	= -g -Wall -pedantic -L/usr/local/Cellar/flex/2.5.37/lib -L/usr/local/Cellar/jansson/2.5/lib
+JANS_H	= -I/usr/local/Cellar/jansson/2.5/include
 
 all:			dirs bin/cll_compiler
 
@@ -15,7 +16,7 @@ dirs:
 			test -d obj || mkdir obj
 
 bin/cll_compiler:	$(OBJS)
-			$(CC) $(CFLAGS) $(OBJS) -o bin/cll_compiler -lfl -lm
+			$(CC) $(CFLAGS) $(OBJS) -o bin/cll_compiler -lfl -lm -ljansson
 
 obj/lex.o:		gen/lex.c
 			$(CC) $(CFLAGS) -c gen/lex.c -o obj/lex.o
@@ -34,7 +35,7 @@ gen/bison.c:		src/cll_compiler.y
 			cmp -s cll_compiler.tab.h include/tokens.h || mv cll_compiler.tab.h include/tokens.h
 
 %.o:			src/%.c
-			$(CC) $(CFLAGS) -c $< 
+			$(CC) $(CFLAGS) $(JANS_H) -c $< 
 
 obj/lex.o	 	: include/tokens.h include/cll_compiler.h 
 
