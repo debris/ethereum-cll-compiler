@@ -13,6 +13,7 @@ void cll_setup_json(char *json_text);
 int main(){
     char *json_text = cll_read_file("test.json");
     cll_setup_json(json_text);
+    free(json_text);
     struct CLLNode *node = NULL;
     for (;;){
         yyparse(&node);
