@@ -71,17 +71,30 @@ void cll_setup_json(char *json_text){
         sym->data.value = value_int;
     }
 
+    for (i = 0; i < json_array_size(arrays); i++){
+        json_t *data = json_array_get(arrays, i);
+
+        json_t *name = json_object_get(data, "name");
+        json_t *fields = json_object_get(data, "fields");
+        const char *name_text = json_string_value(name);
+
+        struct CLLSymbol *sym = cll_lookup_array(name_text, 2000);
+        int j = 0;
+        for (j = 0; j < json_array_size(fields); j++){
+            json_t *field = json_array_get(fields, j);
+    
+            json_t *position = json_object_get(field, "position");
+            json_t *value = json_object_get(field, "value");
+
+            int position_int = json_integer_value(position);
+            int value_int = json_integer_value(value);
+
+            sym->data.array.array[position_int] = value_int;
+        }
+    }
 
     json_decref(root);  // free pointer
 }
-
-void cll_setup(){
-    struct CLLSymbol *cll_tx_data           = cll_lookup_array("tx.data", 2000);
-    struct CLLSymbol *cll_contract_storage  = cll_lookup_array("contract.storage", 2000);
-}
-
-
-
 
 
 

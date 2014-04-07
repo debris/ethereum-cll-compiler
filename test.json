@@ -1,5 +1,6 @@
     {
-        "values": [{
+        "values": [
+        {
             "name": "tx.datan",
             "value": 101
         }, {
@@ -28,8 +29,31 @@
             "value": 100
         }
         ],
-        "arrays": []
+        "arrays": [
+        {
+            "name" : "tx.data",
+            "fields" : [
+                {
+                    "position" : 20,
+                    "value" : 100
+                }, {
+                    "position" : 126,
+                    "value" : 112
+                }
+            ]
+        }, {
+            "name" : "contract.storage",
+            "fields" : [
+                {
+                    "position" : 492,
+                    "value" : 179
+                }
+            ]
+        }
+        ]
     }
+
+
 
 
 
