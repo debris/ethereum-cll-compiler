@@ -61,48 +61,59 @@ struct CLLNode *cll_alloc_node(){
     return node;
 }
 
-struct CLLNode *cll_newast(int nodetype, struct CLLNode *l, struct CLLNode *r){
+struct CLLNode *cll_newast(int op, struct CLLNode *l, struct CLLNode *r){
     struct CLLNode *a = cll_alloc_node();
-    a->nodetype = nodetype;
+    a->nodetype = CLLNodeAst;
+    a->data.ast.op = op;
     a->data.ast.l = l;
     a->data.ast.r = r;
     return a;
 }
 
-struct CLLNode *cll_newcmp(int nodetype, struct CLLNode *l, struct CLLNode *r){
+struct CLLNode *cll_newcmp(int op, struct CLLNode *l, struct CLLNode *r){
     struct CLLNode *c = cll_alloc_node();
-    c->nodetype = '0' + nodetype;
+    c->nodetype = CLLNodeAst;
+    c->data.ast.op = '0' + op;
     c->data.ast.l = l;
     c->data.ast.r = r;
     return c;
 }
 
-struct CLLNode *cll_newflow(int nodetype, struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el){
+struct CLLNode *cll_newif(struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el){
     struct CLLNode *f = cll_alloc_node();
-    f->nodetype = nodetype;
+    f->nodetype = CLLNodeIf;
     f->data.flow.cond = cond;
     f->data.flow.tl = tl;
     f->data.flow.el = el;
     return f;
 }
 
+struct CLLNode *cll_newwhile(struct CLLNode *cond, struct CLLNode *tl){
+    struct CLLNode *f = cll_alloc_node();
+    f->nodetype = CLLNodeWhile;
+    f->data.flow.cond = cond;
+    f->data.flow.tl = tl;
+    f->data.flow.el = NULL;
+    return f;
+}
+
 struct CLLNode *cll_newref(struct CLLSymbol *s){
     struct CLLNode *r = cll_alloc_node();
-    r->nodetype = 'N';
+    r->nodetype = CLLNodeSymbol;
     r->data.symbol = s;
     return r;
 }
 
 struct CLLNode *cll_newintval(int i){
     struct CLLNode *n = cll_alloc_node();
-    n->nodetype = 'K';
+    n->nodetype = CLLNodeInt;
     n->data.number = i;
     return n;
 }
 
 struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v){
     struct CLLNode *a = cll_alloc_node();
-    a->nodetype = '=';
+    a->nodetype = CLLNodeSymbolAsgn; 
     a->data.symasgn.s = s;
     a->data.symasgn.v = v;
     return a;
@@ -110,7 +121,7 @@ struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v){
 
 struct CLLNode *cll_newstmts(){
     struct CLLNode *s = cll_alloc_node();
-    s->nodetype = 'S';
+    s->nodetype = CLLNodeStmts;
     s->data.stmts.count = 0;
     s->data.stmts.size = 4;
     s->data.stmts.stmts = calloc(sizeof(struct CLLNode*), s->data.stmts.size);
@@ -129,7 +140,7 @@ struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt){
 
 struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *position){
    struct CLLNode *a = cll_alloc_node();
-   a->nodetype = 'A';
+   a->nodetype = CLLNodeArrayAccess;
    a->data.array_access.symbol = s;
    a->data.array_access.position = position;
    return a;
@@ -137,7 +148,7 @@ struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *positio
 
 struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position, struct CLLNode *v){
     struct CLLNode *a =cll_alloc_node();
-    a->nodetype = 'G';
+    a->nodetype = CLLNodeArrayAsgn;
     a->data.array_asgn.symbol = s;
     a->data.array_asgn.position = position;
     a->data.array_asgn.v = v;
@@ -146,14 +157,13 @@ struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position,
 
 struct CLLNode *cll_newstop(){
     struct CLLNode *a = cll_alloc_node();
-    a->nodetype = 'Z';
+    a->nodetype = CLLNodeStop;
     return a;
 }
 
 
 int eval(struct CLLNode *a){
     int v = 0;
-    struct CLLSymbol result;
     int i;
     if (!a) {
         yyerror("internal error, null eval");
@@ -162,57 +172,80 @@ int eval(struct CLLNode *a){
 
     //printf("node: %d\n", a->nodetype);
     switch (a->nodetype) {
-        case 'Z': /* STOP */ break; 
-        case 'K': v = a->data.number; break;
-        case 'N': v = a->data.symasgn.s->symboltype == 0 ? a->data.symbol->data.value : 1; break;
+        case CLLNodeAst:
+            {
+                switch (a->data.ast.op) {
+                    case '+': v = eval(a->data.ast.l) + eval(a->data.ast.r); break;
+                    case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
+                    case '*': v = eval(a->data.ast.l) * eval(a->data.ast.r); break;
+                    case '/': v = eval(a->data.ast.l) / eval(a->data.ast.r); break;
+                    case '%': v = eval(a->data.ast.l) % eval(a->data.ast.r); break;
+                    case '^': v = eval(a->data.ast.l) ^ eval(a->data.ast.r); break;
+                    case 'M': v = -eval(a->data.ast.l); break;
+                    case '1': v = eval(a->data.ast.l) > eval(a->data.ast.r) ? 1 : 0; break;
+                    case '2': v = eval(a->data.ast.l) < eval(a->data.ast.r) ? 1 : 0; break;
+                    case '3': v = eval(a->data.ast.l) != eval(a->data.ast.r)? 1 : 0; break;
+                    case '4': v = eval(a->data.ast.l) == eval(a->data.ast.r)? 1 : 0; break;
+                    case '5': v = eval(a->data.ast.l) >= eval(a->data.ast.r)? 1 : 0; break;
+                    case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)? 1 : 0; break;
+                    default: printf("internal error, no matching operator for ast %c\n", a->data.ast.op);
+                }
+            }   break;
 
-        case '=': /*what if it is already assigned */ 
-                  //a->data.symasgn.s->symboltype = 0;
-                  v = a->data.symasgn.s->data.value = eval(a->data.symasgn.v); break;
-        case 'G': v = a->data.array_asgn.symbol->data.array.array[eval(a->data.array_asgn.position)] = eval(a->data.array_asgn.v); break; 
-        case 'A': v = a->data.array_access.symbol->data.array.array[eval(a->data.array_access.position)]; break;
+        case CLLNodeSymbol:
+            {
+                switch (a->data.symbol->symboltype) {
+                    case CLLSymbolInt: v = a->data.symbol->data.value; break;
+                    case CLLSymbolArray: v = 1; break;
+                    case CLLSymbolStop: v = 0; break;
+                }
+            }   break;
 
-        case '+': v = eval(a->data.ast.l) + eval(a->data.ast.r); break;
-        case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
-        case '*': v = eval(a->data.ast.l) * eval(a->data.ast.r); break;
-        case '/': v = eval(a->data.ast.l) / eval(a->data.ast.r); break;
-        case '%': v = eval(a->data.ast.l) % eval(a->data.ast.r); break;
-        case '^': v = eval(a->data.ast.l) ^ eval(a->data.ast.r); break;
-        case 'M': v = -eval(a->data.ast.l); break;
-        case '1': v = eval(a->data.ast.l) > eval(a->data.ast.r) ? 1 : 0; break;
-        case '2': v = eval(a->data.ast.l) < eval(a->data.ast.r) ? 1 : 0; break;
-        case '3': v = eval(a->data.ast.l) != eval(a->data.ast.r)? 1 : 0; break;
-        case '4': v = eval(a->data.ast.l) == eval(a->data.ast.r)? 1 : 0; break;
-        case '5': v = eval(a->data.ast.l) >= eval(a->data.ast.r)? 1 : 0; break;
-        case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)? 1 : 0; break;
-
-        case 'S':
+        case CLLNodeInt:
+            v = a->data.number; break;
+        case CLLNodeSymbolAsgn:
+            {
+                switch (a->data.symasgn.s->symboltype) {
+                    case CLLSymbolInt: v = a->data.symasgn.s->data.value = eval(a->data.symasgn.v); break;
+                    case CLLSymbolArray: v = 1; break;
+                    case CLLSymbolStop: v = 0; break;
+                }
+            }   break;
+        case CLLNodeStmts:
             for (i = 0; i < a->data.stmts.count; ++i){
                 eval(a->data.stmts.stmts[i]);
             }
             v = 1;
             break;
-        case 'I': 
-                if (eval(a->data.flow.cond) != 0){
-                    if (a->data.flow.tl){
-                        v = eval(a->data.flow.tl);
-                    } else {
-                        v = 0;
-                    }
-                } else if (a->data.flow.el){
-                    v = eval(a->data.flow.el);
+
+        case CLLNodeArrayAccess:
+            v = a->data.array_access.symbol->data.array.array[eval(a->data.array_access.position)]; break;
+        case CLLNodeArrayAsgn:
+            v = a->data.array_asgn.symbol->data.array.array[eval(a->data.array_access.position)] = eval(a->data.array_asgn.v); break;
+        case CLLNodeIf:
+            if (eval(a->data.flow.cond) != 0){
+                if (a->data.flow.tl){
+                    v = eval(a->data.flow.tl);
                 } else {
                     v = 0;
                 }
-                break;
-
-        case 'W':
-                if (a->data.flow.tl){ // good order? 
-                    while (eval(a->data.flow.cond) != 0){
-                        v = eval(a->data.flow.tl);
-                    }
+            } else if (a->data.flow.el){
+                v = eval(a->data.flow.el);
+            } else {
+                v = 0;
+            }
+            break;
+        case CLLNodeWhile:
+            if (a->data.flow.tl){
+                while (eval(a->data.flow.cond) != 0){
+                    v = eval(a->data.flow.tl);
                 }
-                break;
+            }
+            break;
+        case CLLNodeStop:
+            v = 0;
+            break;
+
 
         default: printf("internal erro: bad node %d\n", a->nodetype);
     }
@@ -221,8 +254,11 @@ int eval(struct CLLNode *a){
 
 
 void treefree(struct CLLNode *a){
+    /* TODO */
+    return;
+    /*
     switch (a->nodetype){
-            /* two substrees */
+            // two substrees 
         case '+':
         case '-':
         case '*':
@@ -233,7 +269,7 @@ void treefree(struct CLLNode *a){
         case '4': case '5': case '6':
             treefree(a->data.ast.r);
             
-            /* one substree */
+            // one substree
         case 'M':
             treefree(a->data.ast.l);
             break;
@@ -248,10 +284,10 @@ void treefree(struct CLLNode *a){
 
         case 'I':
         case 'W':
-            /* TODO */
+            // TODO 
             break;
         default: printf("internal error: free bad node %c\n", a->nodetype);
-    }
+    } */
     free(a);
 }
 

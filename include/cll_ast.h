@@ -25,9 +25,24 @@ struct CLLSymlist {
 };
 
 struct CLLNode{
-    int nodetype;
+    enum {
+        CLLNodeAst,     // expressions
+        CLLNodeSymbol,
+        CLLNodeInt,
+        CLLNodeSymbolAsgn,
+        CLLNodeStmts,
+        CLLNodeArrayAccess,
+        CLLNodeArrayAsgn,
+        CLLNodeIf,
+        CLLNodeWhile,
+        CLLNodeStop
+ 
+        // TODO signs
+    } nodetype;
+    //int nodetype;
     union {
         struct {
+            int op;
             struct CLLNode *l;
             struct CLLNode *r;
         } ast;
@@ -65,9 +80,10 @@ struct CLLNode{
     } data;
 };
 
-struct CLLNode *cll_newast(int nodetype, struct CLLNode *l, struct CLLNode *r);
-struct CLLNode *cll_newcmp(int nodetype, struct CLLNode *l, struct CLLNode *r);
-struct CLLNode *cll_newflow(int nodetype, struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el);
+struct CLLNode *cll_newast(int op, struct CLLNode *l, struct CLLNode *r);
+struct CLLNode *cll_newcmp(int op, struct CLLNode *l, struct CLLNode *r);
+struct CLLNode *cll_newif(struct CLLNode *cond, struct CLLNode *tl, struct CLLNode *el);
+struct CLLNode *cll_newwhile(struct CLLNode *cond, struct CLLNode *tl);
 struct CLLNode *cll_newref(struct CLLSymbol *s);
 struct CLLNode *cll_newintval(int i);
 struct CLLNode *cll_newasgn(struct CLLSymbol *s, struct CLLNode *v);
@@ -76,6 +92,7 @@ struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt);
 struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *position);
 struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position, struct CLLNode *v);
 struct CLLNode *cll_newstop();
+
 
 int eval(struct CLLNode *);
 void treefree(struct CLLNode *);

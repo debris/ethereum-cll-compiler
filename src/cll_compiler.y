@@ -44,9 +44,9 @@ stmts:                          { $$ = cll_newstmts(); }
      
 
 stmt: exp EOL                   { $$ = $1;}
-    | WHILE exp ':' EOL stmts BREAK EOL { $$ = cll_newflow('W', $2, $5, NULL); }
-    | IF exp ':' EOL stmts BREAK EOL    { $$ = cll_newflow('I', $2, $5, NULL); }
-    | IF exp ':' EOL stmts ELSE ':' EOL stmts BREAK EOL { $$ = cll_newflow('I', $2, $5, $9); }
+    | WHILE exp ':' EOL stmts BREAK EOL { $$ = cll_newwhile($2, $5); }
+    | IF exp ':' EOL stmts BREAK EOL    { $$ = cll_newif($2, $5, NULL); }
+    | IF exp ':' EOL stmts ELSE ':' EOL stmts BREAK EOL { $$ = cll_newif($2, $5, $9); }
     ;
 
 exp: NUMBER                             { $$ = cll_newintval($1); }
