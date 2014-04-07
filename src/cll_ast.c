@@ -7,7 +7,7 @@
 #include <string.h>
 
 
-static unsigned cll_symhash(char *sym){
+static unsigned cll_symhash(const char *sym){
     unsigned int hash = 0;
     unsigned int c = 0;
     while (*sym){
@@ -17,7 +17,7 @@ static unsigned cll_symhash(char *sym){
     return hash;
 }
 
-struct CLLSymbol *cll_lookup(int symboltype, char *sym, int size){
+struct CLLSymbol *cll_lookup(int symboltype, const char *sym, int size){
    struct CLLSymbol *sp = &symtab[cll_symhash(sym)%NHASH];
    int scount = NHASH;
    while (--scount >= 0){
@@ -43,11 +43,11 @@ struct CLLSymbol *cll_lookup(int symboltype, char *sym, int size){
     return NULL;
 }
 
-struct CLLSymbol *cll_lookup_intval(char *sym){
+struct CLLSymbol *cll_lookup_intval(const char *sym){
    return cll_lookup(CLLSymbolInt, sym, 0); 
 }
 
-struct CLLSymbol *cll_lookup_array(char *sym, int size){
+struct CLLSymbol *cll_lookup_array(const char *sym, int size){
     return cll_lookup(CLLSymbolArray, sym, size);
 }
 

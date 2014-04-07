@@ -16,8 +16,8 @@ struct CLLSymbol {
 #define NHASH 9997
 struct CLLSymbol symtab[NHASH];
 
-struct CLLSymbol *cll_lookup_intval(char *);
-struct CLLSymbol *cll_lookup_array(char *, int size);
+struct CLLSymbol *cll_lookup_intval(const char *);
+struct CLLSymbol *cll_lookup_array(const char *, int size);
 
 struct CLLSymlist {
     struct CLLSymbol *sym;
