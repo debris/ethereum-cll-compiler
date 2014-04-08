@@ -24,10 +24,13 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '+' '-' '*' '/' '%' '^' '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE END_OF_FILE
+%token <void> '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE END_OF_FILE
 %type <node> input exp stmt stmts cond
-%left UMINUS
 %nonassoc <func> CMP
+%left '+' '-'
+%left '*' '/' '%'
+%left '^' 
+%left UMINUS
 
 %%
 

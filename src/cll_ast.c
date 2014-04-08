@@ -222,6 +222,12 @@ struct CLLSymbol eval(struct CLLNode *a){
                     case '6':
                         result.data.value = eval_l.data.value <= eval_r.data.value ? 1 : 0;
                         break;
+                    case '7':
+                        result.data.value = eval_l.data.value || eval_r.data.value ? 1 : 0;
+                        break;
+                    case '8':
+                        result.data.value = eval_l.data.value && eval_r.data.value ? 1 : 0;
+                        break;
                     default: printf("internal error, no matching operator for ast %c\n", a->data.ast.op);
                 }
             }   break;

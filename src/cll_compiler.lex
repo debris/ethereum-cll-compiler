@@ -26,6 +26,10 @@
 "=="                    { yylval.func = 4; return CMP; }
 ">="                    { yylval.func = 5; return CMP; }       
 "<="                    { yylval.func = 6; return CMP; }
+"||"                    { yylval.func = 7; return CMP; }
+"or"                    { yylval.func = 7; return CMP; }
+"&&"                    { yylval.func = 8; return CMP; }
+"and"                   { yylval.func = 8; return CMP; }
 
 
 "if"                    { return IF; }
