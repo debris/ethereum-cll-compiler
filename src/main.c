@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <jansson.h>
+#include <string.h>
 #include "../include/cll_ast.h"
 #include "../include/cll_compiler.h"
 #include "../include/cll_print.h"
@@ -9,12 +9,45 @@
 // reference: https://github.com/ethereum/wiki/wiki/%5BEnglish%5D-CLL
 
 int yyparse();
-char *cll_read_file(char *filename);
+char *cll_read_file(const char *filename);
 
-int main(){
-    char *json_text = cll_read_file("test.json");
-    cll_json_setup(json_text);
-    free(json_text);
+void cll_show_help(){
+    printf("Ethereum contract compiler:\n");
+    printf("Options:\n");
+    printf("[-i]        | input json\n");
+    printf("[-o]        | output json\n");
+    printf("[-h]        | show help\n");
+    printf("if none is provided, command line mode is enabled.\n");
+}
+
+int main(int argc, char *argv[]){
+    char *input_file = NULL;
+    char *output_file = NULL;
+
+    int i;
+    for (i = 1; i < argc; ++i){
+        if (!strcmp(argv[i], "-i")){
+            input_file = strdup(argv[++i]); 
+        } else if (!strcmp(argv[i], "-o")){
+            output_file = strdup(argv[++i]);
+        } else if (!strcmp(argv[i], "-h")){
+            cll_show_help();
+            return EXIT_SUCCESS;
+        } else {
+            printf("error, unknown param: %s\n", argv[i]);
+        }
+    }
+
+    if (argc == 1){
+        printf("Command line mode: \n");
+    }
+
+    if (input_file){
+        char *json_text = cll_read_file(input_file);
+        cll_json_setup(json_text);
+        free(json_text);
+    }
+
     struct CLLNode *node = NULL;
     for (;;){
         yyparse(&node);
@@ -27,12 +60,16 @@ int main(){
         }
 
     }
-    cll_json_final();
-    cll_print_final();
+
+    if (output_file){
+        cll_json_final(output_file);
+    } else {
+        cll_print_final();
+    }
     return EXIT_SUCCESS;
 }
 
-char *cll_read_file(char *filename){
+char *cll_read_file(const char *filename){
     char *file_contents;
     long input_file_size;
     FILE *input_file = fopen(filename, "rb");

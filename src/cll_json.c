@@ -60,7 +60,7 @@ void cll_json_setup(char *json_text){
 }
 
 
-void cll_json_final(){
+void cll_json_final(const char *output_filename){
     json_t *root, *arrays, *values;
 
     root = json_object();
@@ -96,7 +96,7 @@ void cll_json_final(){
 
     json_object_set(root, "arrays", arrays);
 
-    json_dump_file(root, "test_output.json", 0);
+    json_dump_file(root, output_filename, 0);
 }
 
 
