@@ -1,3 +1,6 @@
+{
+    "code": "if tx.value < (block.basefee * 200):\nstop\nend\nif contract.storage[tx.data[0]] < 100:\nstop\nend\ncontract.storage[tx.data[0]] = tx.data[1]\n",
+    "data":
     {
         "values": [
         {
@@ -52,6 +55,11 @@
         }
         ]
     }
+}
+
+
+
+    
 
 
 

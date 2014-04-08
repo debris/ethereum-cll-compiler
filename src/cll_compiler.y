@@ -24,7 +24,7 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '+' '-' '*' '/' '%' '^' '=' ':' '[' ']' IF STOP EOL BREAK ELSE ARRAY WHILE
+%token <void> '+' '-' '*' '/' '%' '^' '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE
 %type <node> input exp stmt stmts cond
 %left UMINUS
 %nonassoc <func> CMP
@@ -38,15 +38,16 @@ input:
      } 
      ;
 
-stmts:                          { $$ = cll_newstmts(); }
-     | stmts stmt               { $$ = cll_addstmt($1, $2); }
+stmts:                                  { $$ = cll_newstmts(); }
+     | stmts stmt                       { $$ = cll_addstmt($1, $2); }
      ;
      
 
-stmt: exp EOL                   { $$ = $1;}
-    | WHILE exp ':' EOL stmts BREAK EOL { $$ = cll_newwhile($2, $5); }
-    | IF exp ':' EOL stmts BREAK EOL    { $$ = cll_newif($2, $5, NULL); }
-    | IF exp ':' EOL stmts ELSE ':' EOL stmts BREAK EOL { $$ = cll_newif($2, $5, $9); }
+stmt: exp EOL                           { $$ = $1;}
+    | EOL stmt                          { $$ = $2;}
+    | WHILE exp ':' EOL stmts END EOL   { $$ = cll_newwhile($2, $5); }
+    | IF exp ':' EOL stmts END EOL      { $$ = cll_newif($2, $5, NULL); }
+    | IF exp ':' EOL stmts ELSE ':' EOL stmts END EOL { $$ = cll_newif($2, $5, $9); }
     ;
 
 exp: NUMBER                             { $$ = cll_newintval($1); }

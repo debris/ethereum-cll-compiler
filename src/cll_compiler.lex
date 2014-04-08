@@ -30,10 +30,11 @@
 
 "if"                    { return IF; }
 "else"                  { return ELSE; }
-"break"                 { return BREAK; }
+"end"                   { return END; }
 "while"                 { return WHILE; }
 "array"                 { return ARRAY; }
 "stop"                  { return STOP; }
+<<EOF>>                 { return STOP; }
 
  /* names */
 [0-9]+                  { yylval.intval = atoi(yytext); return NUMBER; }

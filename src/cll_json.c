@@ -3,6 +3,7 @@
 #include "../include/cll_json.h"
 #include "../include/cll_ast.h"
 
+void yy_scan_string();  // fix this!
 
 void cll_json_setup(char *json_text){
     json_t *root;
@@ -15,11 +16,13 @@ void cll_json_setup(char *json_text){
         return;
     }
 
-    json_t *values, *arrays, *code;
+    json_t *values, *arrays, *code, *data;
     int i;
 
-    values = json_object_get(root, "values");
-    arrays = json_object_get(root, "arrays");
+    data = json_object_get(root, "data");
+    code = json_object_get(root, "code");
+    values = json_object_get(data, "values");
+    arrays = json_object_get(data, "arrays");
     
 
     for (i = 0; i < json_array_size(values); i++){
@@ -56,6 +59,8 @@ void cll_json_setup(char *json_text){
         }
     }
 
+    const char *code_string = json_string_value(code);
+    yy_scan_string(code_string);
     json_decref(root);  // free pointer
 }
 
