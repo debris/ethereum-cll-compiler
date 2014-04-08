@@ -31,7 +31,8 @@ struct CLLSymbol *cll_lookup(int symboltype, const char *sym, int size){
             if (symboltype == CLLSymbolInt){
                 sp->data.value = 0;
             } else {
-                sp->data.array.array = malloc(sizeof(int) * size); 
+                sp->data.array.array = malloc(sizeof(int) * size);
+                sp->data.array.size = size;
             }
             sp->symboltype = symboltype;
             return sp;
@@ -162,94 +163,180 @@ struct CLLNode *cll_newstop(){
 }
 
 
-int eval(struct CLLNode *a){
-    int v = 0;
+struct CLLSymbol eval(struct CLLNode *a){
     int i;
+    struct CLLSymbol result;
     if (!a) {
         yyerror("internal error, null eval");
-        return 0;
+        return result; // null result
     }
 
-    //printf("node: %d\n", a->nodetype);
+    //printf("o");
     switch (a->nodetype) {
         case CLLNodeAst:
-            {
+            {   
+                struct CLLSymbol eval_l = eval(a->data.ast.l);
+                struct CLLSymbol eval_r;
+                if (a->data.ast.r){
+                    eval_r = eval(a->data.ast.r);
+                }
+
+                result.symboltype = CLLSymbolInt;
                 switch (a->data.ast.op) {
-                    case '+': v = eval(a->data.ast.l) + eval(a->data.ast.r); break;
-                    case '-': v = eval(a->data.ast.l) - eval(a->data.ast.r); break;
-                    case '*': v = eval(a->data.ast.l) * eval(a->data.ast.r); break;
-                    case '/': v = eval(a->data.ast.l) / eval(a->data.ast.r); break;
-                    case '%': v = eval(a->data.ast.l) % eval(a->data.ast.r); break;
-                    case '^': v = eval(a->data.ast.l) ^ eval(a->data.ast.r); break;
-                    case 'M': v = -eval(a->data.ast.l); break;
-                    case '1': v = eval(a->data.ast.l) > eval(a->data.ast.r) ? 1 : 0; break;
-                    case '2': v = eval(a->data.ast.l) < eval(a->data.ast.r) ? 1 : 0; break;
-                    case '3': v = eval(a->data.ast.l) != eval(a->data.ast.r)? 1 : 0; break;
-                    case '4': v = eval(a->data.ast.l) == eval(a->data.ast.r)? 1 : 0; break;
-                    case '5': v = eval(a->data.ast.l) >= eval(a->data.ast.r)? 1 : 0; break;
-                    case '6': v = eval(a->data.ast.l) <= eval(a->data.ast.r)? 1 : 0; break;
+                    case '+':
+                        result.data.value = eval_l.data.value + eval_r.data.value;
+                        break;
+                    case '-':
+                        result.data.value = eval_l.data.value - eval_r.data.value;
+                        break;
+                    case '*':
+                        result.data.value = eval_l.data.value * eval_r.data.value;
+                        break;
+                    case '/':
+                        result.data.value = eval_l.data.value / eval_r.data.value;
+                        break;
+                    case '%':
+                        result.data.value = eval_l.data.value % eval_r.data.value;
+                        break;
+                    case '^':
+                        result.data.value = eval_l.data.value ^ eval_r.data.value;
+                        break;
+                    case 'M':
+                        result.data.value = -eval_l.data.value;
+                        break;
+                    case '1': 
+                        result.data.value = eval_l.data.value > eval_r.data.value ? 1 : 0;
+                        break;
+                    case '2':
+                        result.data.value = eval_l.data.value < eval_r.data.value ? 1 : 0;
+                        break;
+                    case '3':
+                        result.data.value = eval_l.data.value != eval_r.data.value ? 1 : 0;
+                        break;
+                    case '4':
+                        result.data.value = eval_l.data.value == eval_r.data.value ? 1 : 0;
+                        break;
+                    case '5':
+                        result.data.value = eval_l.data.value >= eval_r.data.value ? 1 : 0;
+                        break;
+                    case '6':
+                        result.data.value = eval_l.data.value <= eval_r.data.value ? 1 : 0;
+                        break;
                     default: printf("internal error, no matching operator for ast %c\n", a->data.ast.op);
                 }
             }   break;
 
         case CLLNodeSymbol:
             {
+                result.symboltype = a->data.symbol->symboltype;
                 switch (a->data.symbol->symboltype) {
-                    case CLLSymbolInt: v = a->data.symbol->data.value; break;
-                    case CLLSymbolArray: v = 1; break;
-                    case CLLSymbolStop: v = 0; break;
+                    case CLLSymbolInt: 
+                        result.data.value = a->data.symbol->data.value;
+                        break;
+                    case CLLSymbolArray:
+                        result.data.array.size = a->data.symbol->data.array.size;
+                        result.data.array.array = a->data.symbol->data.array.array;
+                        //printf("debug :%d : %d", result.data.array.size, a->data.symbol->data.array.size);
+                        break;
+                    case CLLSymbolStop:
+                        break;
                 }
             }   break;
 
         case CLLNodeInt:
-            v = a->data.number; break;
+            result.symboltype = CLLSymbolInt;
+            result.data.value = a->data.number; 
+            break;
         case CLLNodeSymbolAsgn:
             {
+                struct CLLSymbol eval_v = eval(a->data.symasgn.v);
+                result.symboltype = a->data.symasgn.s->symboltype;
                 switch (a->data.symasgn.s->symboltype) {
-                    case CLLSymbolInt: v = a->data.symasgn.s->data.value = eval(a->data.symasgn.v); break;
-                    case CLLSymbolArray: v = 1; break;
-                    case CLLSymbolStop: v = 0; break;
+                    case CLLSymbolInt:
+                        result.data.value = a->data.symasgn.s->data.value = eval_v.data.value;
+                        break;
+                    case CLLSymbolArray:
+                        result.data.array.size = a->data.symasgn.s->data.array.size = eval_v.data.array.size;
+                        result.data.array.array = a->data.symasgn.s->data.array.array = eval_v.data.array.array;
+                        break;
+                    case CLLSymbolStop: 
+                        break;
                 }
             }   break;
         case CLLNodeStmts:
-            for (i = 0; i < a->data.stmts.count; ++i){
-                eval(a->data.stmts.stmts[i]);
+            {
+                int type = -1;
+                for (i = 0; i < a->data.stmts.count && type != CLLSymbolStop; ++i){
+                    type = eval(a->data.stmts.stmts[i]).symboltype;
+                }
+                if (type == CLLSymbolStop){
+                    result.symboltype = CLLSymbolStop;
+                } else {
+                    result.symboltype = CLLSymbolInt;
+                    result.data.value = 1;
+                }
             }
-            v = 1;
             break;
 
         case CLLNodeArrayAccess:
-            v = a->data.array_access.symbol->data.array.array[eval(a->data.array_access.position)]; break;
+            {
+                struct CLLSymbol eval_p = eval(a->data.array_access.position);
+                result.symboltype = CLLSymbolInt;
+                result.data.value = a->data.array_access.symbol->data.array.array[eval_p.data.value];
+            }
+            break;
         case CLLNodeArrayAsgn:
-            v = a->data.array_asgn.symbol->data.array.array[eval(a->data.array_access.position)] = eval(a->data.array_asgn.v); break;
+            {
+                struct CLLSymbol eval_p = eval(a->data.array_asgn.position);
+                struct CLLSymbol eval_v = eval(a->data.array_asgn.v);
+                result.symboltype = CLLSymbolInt;
+                result.data.value = a->data.array_asgn.symbol->data.array.array[eval_p.data.value] = eval_v.data.value;
+            }
+            break;
         case CLLNodeIf:
-            if (eval(a->data.flow.cond) != 0){
-                if (a->data.flow.tl){
-                    v = eval(a->data.flow.tl);
+            {
+                struct CLLSymbol eval_cond = eval(a->data.flow.cond);
+                if (eval_cond.data.value != 0){
+                    if (a->data.flow.tl){
+                        struct CLLSymbol eval_tl = eval(a->data.flow.tl);
+                        result = eval_tl;
+                    } else {
+                        result.symboltype = CLLSymbolInt;
+                        result.data.value = 0;
+                    }
+                } else if (a->data.flow.el) {
+                    struct CLLSymbol eval_el = eval(a->data.flow.el);
+                    result = eval_el;
                 } else {
-                    v = 0;
+                    result.symboltype = CLLSymbolInt;
+                    result.data.value = 0;
                 }
-            } else if (a->data.flow.el){
-                v = eval(a->data.flow.el);
-            } else {
-                v = 0;
-            }
-            break;
+            } break;
         case CLLNodeWhile:
-            if (a->data.flow.tl){
-                while (eval(a->data.flow.cond) != 0){
-                    v = eval(a->data.flow.tl);
+            {   
+                if (a->data.flow.tl){
+                    int type = -1;    
+                    while (eval(a->data.flow.cond).data.value != 0 && type != CLLSymbolStop) {
+                        type = eval(a->data.flow.tl).data.value;
+                    }
+                    if (type == CLLSymbolStop) {
+                        result.symboltype = CLLSymbolStop;
+                    } else {
+                        result.symboltype = CLLSymbolInt;
+                        result.data.value = 1;
+                    }
                 }
-            }
-            break;
+            } break;
+
         case CLLNodeStop:
-            v = 0;
+            result.symboltype = CLLSymbolStop;
+            result.data.value = 1;
             break;
 
 
         default: printf("internal erro: bad node %d\n", a->nodetype);
     }
-    return v;
+    return result;
 }
 
 

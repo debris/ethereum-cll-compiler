@@ -94,7 +94,7 @@ struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position,
 struct CLLNode *cll_newstop();
 
 
-int eval(struct CLLNode *);
+struct CLLSymbol eval(struct CLLNode *);
 void treefree(struct CLLNode *);
 
 

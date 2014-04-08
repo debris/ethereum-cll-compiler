@@ -3,6 +3,7 @@
 #include <jansson.h>
 #include "../include/cll_ast.h"
 #include "../include/cll_compiler.h"
+#include "../include/cll_print.h"
 
 // reference: https://github.com/ethereum/wiki/wiki/%5BEnglish%5D-CLL
 
@@ -18,12 +19,13 @@ int main(){
     for (;;){
         yyparse(&node);
         if (node != NULL){
-            int a = eval(node);
-            //treefree(node);
-            printf("cll >> %d\n", a);
-        } else {
-            printf("cll >> error root is null\n");
+            struct CLLSymbol symbol= eval(node);
+            cll_print_symbol(&symbol);
+            if (symbol.symboltype == CLLSymbolStop){
+                break;
+            }
         }
+
     }
     return EXIT_SUCCESS;
 }

@@ -37,7 +37,7 @@ gen/bison.c:		src/cll_compiler.y
 %.o:			src/%.c
 			$(CC) $(CFLAGS) $(JANS_H) -c $< 
 
-obj/lex.o	 	: include/tokens.h include/cll_compiler.h 
+obj/lex.o	 	: include/tokens.h include/cll_compiler.h
 
 clean:		
 	rm -rf gen obj bin include/tokens.h include/lex.h src/*.o
