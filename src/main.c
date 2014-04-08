@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <jansson.h>
+//#include <jansson.h>
 #include "../include/cll_ast.h"
 #include "../include/cll_compiler.h"
 #include "../include/cll_print.h"
+#include "../include/cll_json.h"
 
 // reference: https://github.com/ethereum/wiki/wiki/%5BEnglish%5D-CLL
 
 int yyparse();
 char *cll_read_file(char *filename);
-void cll_setup_json(char *json_text);
 
 int main(){
     char *json_text = cll_read_file("test.json");
-    cll_setup_json(json_text);
+    cll_json_setup(json_text);
     free(json_text);
     struct CLLNode *node = NULL;
     for (;;){
@@ -27,7 +27,8 @@ int main(){
         }
 
     }
-    cll_print_final_values();
+    cll_json_final();
+    cll_print_final();
     return EXIT_SUCCESS;
 }
 
@@ -45,60 +46,7 @@ char *cll_read_file(char *filename){
     return file_contents;
 }
 
-void cll_setup_json(char *json_text){
-    json_t *root;
-    json_error_t error;
-    
-    root = json_loads(json_text, 0, &error);
 
-    if (!root){
-        printf("error loading file!");
-        return;
-    }
-
-    json_t *values, *arrays, *code;
-    int i;
-
-    values = json_object_get(root, "values");
-    arrays = json_object_get(root, "arrays");
-    
-
-    for (i = 0; i < json_array_size(values); i++){
-        json_t *data = json_array_get(values, i);
-
-        json_t *name = json_object_get(data, "name");
-        json_t *value = json_object_get(data, "value");
-        const char *name_text = json_string_value(name);
-        int value_int = json_integer_value(value);
-
-        struct CLLSymbol *sym = cll_lookup_intval(name_text);
-        sym->data.value = value_int;
-    }
-
-    for (i = 0; i < json_array_size(arrays); i++){
-        json_t *data = json_array_get(arrays, i);
-
-        json_t *name = json_object_get(data, "name");
-        json_t *fields = json_object_get(data, "fields");
-        const char *name_text = json_string_value(name);
-
-        struct CLLSymbol *sym = cll_lookup_array(name_text, 2000);
-        int j = 0;
-        for (j = 0; j < json_array_size(fields); j++){
-            json_t *field = json_array_get(fields, j);
-    
-            json_t *position = json_object_get(field, "position");
-            json_t *value = json_object_get(field, "value");
-
-            int position_int = json_integer_value(position);
-            int value_int = json_integer_value(value);
-
-            sym->data.array.array[position_int] = value_int;
-        }
-    }
-
-    json_decref(root);  // free pointer
-}
 
 
 

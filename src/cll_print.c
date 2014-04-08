@@ -29,7 +29,7 @@ void cll_print_symbol_array(struct CLLSymbol *symbol){
     printf("\n");
 }
 
-void cll_print_final_values(){
+void cll_print_final(){
     int i, size = 10;
     char *arrays_to_print[10] = {"contract.storage", "tx.data"};
 
