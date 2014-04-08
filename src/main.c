@@ -27,6 +27,7 @@ int main(){
         }
 
     }
+    cll_print_final_values();
     return EXIT_SUCCESS;
 }
 
