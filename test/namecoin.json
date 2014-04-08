@@ -1,5 +1,5 @@
 {
-    "code": "d = 15\n",
+    "code": "if tx.value < block.basefee * 200:\nstop\nend\nif contract.storage[tx.data[0]] or (tx.data[0] < 100):\nstop\nend\ncontract.storage[tx.data[0]] = tx.data[1]\n",
     "data":
     {
         "values": [
@@ -8,7 +8,7 @@
             "value": 101
         }, {
             "name": "tx.value",
-            "value": 100
+            "value": 300
         }, {
             "name": "tx.sender",
             "value": 100
@@ -29,7 +29,7 @@
             "value": 100
         },{
             "name": "block.basefee",
-            "value": 100
+            "value": 1
         }
         ],
         "arrays": [
@@ -37,20 +37,17 @@
             "name" : "tx.data",
             "fields" : [
                 {
-                    "position" : 20,
-                    "value" : 100
-                }, {
-                    "position" : 126,
-                    "value" : 112
+                    "position" : 0,
+                    "value" : 166
+                },
+                {
+                    "position" : 1,
+                    "value" : 250
                 }
             ]
         }, {
             "name" : "contract.storage",
             "fields" : [
-                {
-                    "position" : 492,
-                    "value" : 179
-                }
             ]
         }
         ]

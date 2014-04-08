@@ -62,6 +62,11 @@ void cll_json_setup(char *json_text){
     const char *code_string = json_string_value(code);
     yy_scan_string(code_string);
     json_decref(root);  // free pointer
+
+    printf("running code:\n");
+    printf("/****************************************/\n");
+    printf("%s", code_string);
+    printf("/****************************************/\n");
 }
 
 

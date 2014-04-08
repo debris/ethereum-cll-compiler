@@ -5,22 +5,23 @@
 void cll_print_symbol_array(struct CLLSymbol *symbol);
 
 void cll_print_symbol(struct CLLSymbol *symbol){
+    printf("cll >> ");
     switch (symbol->symboltype) {
         case CLLSymbolInt:
-            printf("cll >> %d\n", symbol->data.value);
+            printf("%d\n", symbol->data.value);
             break;
         case CLLSymbolArray:
             cll_print_symbol_array(symbol);
             break;
         case CLLSymbolStop:
-            printf("cll >> stop\n");
+            printf("stop\n");
             break;
     }
 }
 
 void cll_print_symbol_array(struct CLLSymbol *symbol){
     int i;
-    printf("cll >> array(%d): ", symbol->data.array.size);
+    printf("array(%d): ", symbol->data.array.size);
     for (i = 0; i < symbol->data.array.size; ++i) {
         if (symbol->data.array.array[i] != 0){
             printf("[%d] = %d, ", i, symbol->data.array.array[i]);
@@ -37,6 +38,7 @@ void cll_print_final(){
     for (i = 0; i < size; i++){
         if (arrays_to_print[i]){
             struct CLLSymbol *symbol = cll_lookup_array(arrays_to_print[i], 0);
+            printf("%s: ", arrays_to_print[i]);
             cll_print_symbol_array(symbol);
         }
     }
