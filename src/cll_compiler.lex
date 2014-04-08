@@ -34,7 +34,7 @@
 "while"                 { return WHILE; }
 "array"                 { return ARRAY; }
 "stop"                  { return STOP; }
-<<EOF>>                 { return STOP; }
+<<EOF>>                 { return END_OF_FILE; }
 
  /* names */
 [0-9]+                  { yylval.intval = atoi(yytext); return NUMBER; }

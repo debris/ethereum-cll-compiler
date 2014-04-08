@@ -24,7 +24,7 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '+' '-' '*' '/' '%' '^' '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE
+%token <void> '+' '-' '*' '/' '%' '^' '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE END_OF_FILE
 %type <node> input exp stmt stmts cond
 %left UMINUS
 %nonassoc <func> CMP
@@ -45,6 +45,7 @@ stmts:                                  { $$ = cll_newstmts(); }
 
 stmt: exp EOL                           { $$ = $1;}
     | EOL stmt                          { $$ = $2;}
+    | END_OF_FILE                       { $$ = cll_newstop();}
     | WHILE exp ':' EOL stmts END EOL   { $$ = cll_newwhile($2, $5); }
     | IF exp ':' EOL stmts END EOL      { $$ = cll_newif($2, $5, NULL); }
     | IF exp ':' EOL stmts ELSE ':' EOL stmts END EOL { $$ = cll_newif($2, $5, $9); }
