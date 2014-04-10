@@ -1,0 +1,9 @@
+if tx.value < block.basefee * 200:
+    stop
+end 
+if contract.storage[tx.data[0]] or (tx.data[0] < 100):
+    stop
+end
+contract.storage[tx.data[0]] = tx.data[1]
+
+        

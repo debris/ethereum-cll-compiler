@@ -1,10 +1,25 @@
 #Ethereum CLL Contract Simulator
 
+## Working Examples
+
+| Name            | Original file                                       | Simulation                                				|
+| --------------- | --------------------------------------------------- | ----------------------------------------- 				|
+| SubCurrency     | [subcurrency.cll](test/subcurrency.cll)             | [subcurrency.json](test/subcurrency.json)					|
+| Namecoin        | [namecoin.cll](test/namecoin.cll)                   | [namecoin_file.json](test/namecoin.json)       			|
+| Datafeed        | [datafeed.cll](test/datafeed.cll)                   | [datafeed.json](test/datafeed.json)       				|
+
+
+## how to run test?
+
+```bash
+./bin/cll_compiler -i test/subcurrency.json
+```
+
 ## dependencies
 
-flex 2.5.37
-bison 3.0.2
-jansson 2.5
+- flex 2.5.37
+- bison 3.0.2
+- jansson 2.5
 
 ## install
 

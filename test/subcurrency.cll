@@ -1,0 +1,23 @@
+if tx.value < 100 * block.basefee:
+    stop 
+else:
+    if contract.storage[1000]:
+        frm = tx.sender
+        to = tx.data[0]
+        value = tx.data[1]
+        if to <= 1000:
+            stop
+        end
+        bal = contract.storage[frm]
+        if bal < value:
+            stop
+        else:
+            contract.storage[frm] = contract.storage[frm] - value
+            contract.storage[to] = contract.storage[to] + value
+        end
+    else:
+        contract.storage[tx.sender] = 10^18
+        contract.storage[1000] = 1
+    end
+end
+

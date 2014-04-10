@@ -1,9 +1,9 @@
 {
     "code":
     {   
-        "source" : "plain_text", 
-        "plain_text" : "if tx.value < block.basefee * 200:\nstop\nend\nif contract.storage[tx.data[0]] or (tx.data[0] < 100):\nstop\nend\ncontract.storage[tx.data[0]] = tx.data[1]\n" 
-        },
+        "source" : "file", 
+        "file" : "test/datafeed.cll"
+    },
     "data":
     {
         "values": [
@@ -34,6 +34,9 @@
         },{
             "name": "block.basefee",
             "value": 1
+        },{
+            "name": "feedowner",
+            "value" : 100
         }
         ],
         "arrays": [

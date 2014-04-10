@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <jansson.h>
+#include <string.h>
 #include "../include/cll_json.h"
 #include "../include/cll_ast.h"
 
 void yy_scan_string();  // fix this!
+
+char *cll_read_file(const char *filename);
 
 void cll_json_setup(char *json_text){
     json_t *root;
@@ -59,19 +62,38 @@ void cll_json_setup(char *json_text){
         }
     }
 
-    const char *code_string = json_string_value(code);
-    yy_scan_string(code_string);
-    json_decref(root);  // free pointer
+    char *plain_text_code = "";
+    
+
+    json_t *code_source = json_object_get(code, "source");
+    const char *code_source_string = json_string_value(code_source);
+    if (!strcmp(code_source_string, "plain_text")){
+        json_t *plain_text = json_object_get(code, "plain_text");
+        plain_text_code = json_string_value(plain_text);
+        yy_scan_string(plain_text_code);
+    } else if (!strcmp(code_source_string, "file")){
+        json_t *file_name = json_object_get(code, "file");
+        const char *plain_file_name = json_string_value(file_name);
+        printf("%s ", plain_file_name);
+        plain_text_code = cll_read_file(plain_file_name);
+        yy_scan_string(plain_text_code);
+    } else {
+        printf("cannot read source code!\n");
+    }
+
+
 
     printf("running code:\n");
     printf("/****************************************/\n");
-    printf("%s", code_string);
+    printf("%s", plain_text_code);
     printf("/****************************************/\n");
+
+    json_decref(root);  // free pointer
 }
 
 
 void cll_json_final(const char *output_filename){
-    json_t *data, *root, *arrays, *values;
+    json_t *data, *root, *arrays;
 
     data = json_object();
     root = json_object();

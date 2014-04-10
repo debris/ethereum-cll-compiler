@@ -1,9 +1,9 @@
 {
     "code":
     {   
-        "source" : "plain_text", 
-        "plain_text" : "if tx.value < block.basefee * 200:\nstop\nend\nif contract.storage[tx.data[0]] or (tx.data[0] < 100):\nstop\nend\ncontract.storage[tx.data[0]] = tx.data[1]\n" 
-        },
+        "source" : "file", 
+        "file" : "test/subcurrency.cll"
+    },
     "data":
     {
         "values": [
@@ -15,7 +15,7 @@
             "value": 300
         }, {
             "name": "tx.sender",
-            "value": 100
+            "value": 392
         },{
             "name": "contract.address",
             "value": 100
@@ -42,7 +42,7 @@
             "fields" : [
                 {
                     "position" : 0,
-                    "value" : 166
+                    "value" : 1664
                 },
                 {
                     "position" : 1,
@@ -52,6 +52,14 @@
         }, {
             "name" : "contract.storage",
             "fields" : [
+                {
+                    "position" : 392,
+                    "value" : 5020
+                },
+                {
+                    "position" : 1000,
+                    "value" : 557
+                }
             ]
         }
         ]

@@ -1,0 +1,5 @@
+if tx.sender != feedowner:
+    stop
+end
+contract.storage[data[0]] = data[1]
+
