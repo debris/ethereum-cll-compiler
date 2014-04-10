@@ -5,7 +5,7 @@
 | Name            | Original file                                       | Simulation                                				|
 | --------------- | --------------------------------------------------- | ----------------------------------------- 				|
 | SubCurrency     | [subcurrency.cll](test/subcurrency.cll)             | [subcurrency.json](test/subcurrency.json)					|
-| Namecoin        | [namecoin.cll](test/namecoin.cll)                   | [namecoin_file.json](test/namecoin.json)       			|
+| Namecoin        | [namecoin.cll](test/namecoin.cll)                   | [namecoin_file.json](test/namecoin_file.json)       			|
 | Datafeed        | [datafeed.cll](test/datafeed.cll)                   | [datafeed.json](test/datafeed.json)       				|
 
 
