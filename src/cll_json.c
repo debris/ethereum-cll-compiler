@@ -71,8 +71,9 @@ void cll_json_setup(char *json_text){
 
 
 void cll_json_final(const char *output_filename){
-    json_t *root, *arrays, *values;
+    json_t *data, *root, *arrays, *values;
 
+    data = json_object();
     root = json_object();
     arrays = json_array();
 
@@ -86,7 +87,9 @@ void cll_json_final(const char *output_filename){
     	struct CLLSymbol *symbol = cll_lookup_array(arrays_to_print[i], 0);
     	json_t *json_symbol = json_object();
     	json_t *name_value = json_string(arrays_to_print[i]);
-    	json_object_set(json_symbol, "name", name_value);
+    	
+        json_object_set(json_symbol, "name", name_value);
+        json_decref(name_value);
 
     	json_t *fields = json_array();
     	for (j = 0; j < symbol->data.array.size; j++){
@@ -95,18 +98,32 @@ void cll_json_final(const char *output_filename){
     			json_t *node = json_object();
     			json_t *position = json_integer(j);
     			json_t *value_json = json_integer(value);
+
     			json_object_set(node, "position", position);
+                        json_decref(position);
+
     			json_object_set(node, "value", value_json);
+                        json_decref(value_json);
+
     			json_array_append(fields, node);
+                        json_decref(node);
     		}
     	}
     	json_object_set(json_symbol, "fields", fields);
+        json_decref(fields);
+
     	json_array_append(arrays, json_symbol);
+        json_decref(json_symbol);
     }
 
     json_object_set(root, "arrays", arrays);
+    json_decref(arrays);
 
-    json_dump_file(root, output_filename, 0);
+    json_object_set(data, "data", root);
+    json_decref(root);
+
+    json_dump_file(data, output_filename, 0);
+    json_decref(data);
 }
 
 

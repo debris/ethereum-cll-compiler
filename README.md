@@ -1,5 +1,17 @@
 #Ethereum CLL Contract Simulator
 
+## dependencies
+
+flex 2.5.37
+bison 3.0.2
+jansson 2.5
+
+## install
+
+```
+make
+```
+
 ## examples
 
 
@@ -56,4 +68,14 @@ if tx.value < block.basefee * 200:
     stop
 end
 ```
+
+
+## params [-i] [-o]
+
+```
+./bin/cll_compiler -i test/namecoin.json -o output.json
+```
+
+[-h] help
+
 
