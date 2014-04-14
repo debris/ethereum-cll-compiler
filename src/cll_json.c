@@ -63,7 +63,10 @@ void cll_json_setup(char *json_text){
     }
 
     char *plain_text_code = "";
-    
+   
+    struct CLLSymbol *contract_balance = cll_lookup_intval("contract.balance");
+    struct CLLSymbol *tx_value = cll_lookup_intval("tx.value");
+    contract_balance->data.value += tx_value->data.value;
 
     json_t *code_source = json_object_get(code, "source");
     const char *code_source_string = json_string_value(code_source);
@@ -166,6 +169,11 @@ void cll_json_final(const char *output_filename){
     json_t *json_stop_line = json_integer(saved_stop->data.value);
     json_object_set(root, "stop", json_stop_line);
     json_decref(json_stop_line);
+
+    struct CLLSymbol *balance = cll_lookup_intval("contract.balance");
+    json_t *balance_json = json_integer(balance->data.value);
+    json_object_set(root, "contract.balance", balance_json);
+    json_decref(balance_json);
 
     json_object_set(root, "arrays", arrays);
     json_decref(arrays);
