@@ -16,6 +16,9 @@ void cll_print_symbol(struct CLLSymbol *symbol){
         case CLLSymbolStop:
             printf("stopped at line: %d\n", symbol->data.value);
             break;
+        case CLLSymbolSend:
+            printf("send to address: %d value: %d gas: %d\n", symbol->data.trans.trans->address, symbol->data.trans.trans->value, symbol->data.trans.trans->gas);
+            break;
     }
 }
 

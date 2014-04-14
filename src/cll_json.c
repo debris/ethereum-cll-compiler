@@ -136,7 +136,31 @@ void cll_json_final(const char *output_filename){
 
     	json_array_append(arrays, json_symbol);
         json_decref(json_symbol);
-    } 
+    }
+
+    struct CLLSymbol *tx = cll_lookup_transactions();
+    json_t *tx_json_array = json_array();
+
+    for (i = 0; i < tx->data.trans.current; i++){
+        json_t *tx_json = json_object(); 
+        json_t *address_json = json_integer(tx->data.trans.trans[i].address);
+        json_t *value_json = json_integer(tx->data.trans.trans[i].value);
+        json_t *gas_json = json_integer(tx->data.trans.trans[i].gas);
+
+        json_object_set(tx_json, "address", address_json);
+        json_object_set(tx_json, "value", value_json);
+        json_object_set(tx_json, "gas", gas_json);
+
+        json_array_append(tx_json_array, tx_json);
+
+        json_decref(tx_json);
+        json_decref(address_json);
+        json_decref(value_json);
+        json_decref(gas_json);
+    }
+    
+    json_object_set(root, "transactions", tx_json_array);
+    json_decref(tx_json_array);
 
     struct CLLSymbol *saved_stop = cll_lookup_intval("stop");
     json_t *json_stop_line = json_integer(saved_stop->data.value);

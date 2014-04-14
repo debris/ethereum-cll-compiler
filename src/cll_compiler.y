@@ -24,7 +24,7 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '=' ':' '[' ']' IF END ELSE ARRAY WHILE EOL
+%token <void> '=' ':' '[' ']' IF END ELSE ARRAY WHILE EOL SEND ','
 %token <intval> END_OF_FILE STOP
 %type <node> input exp stmt stmts cond
 %nonassoc <func> CMP
@@ -53,6 +53,7 @@ stmt: exp EOL                           { $$ = $1;}
     | WHILE exp ':' EOL stmts END EOL   { $$ = cll_newwhile($2, $5); }
     | IF exp ':' EOL stmts END EOL      { $$ = cll_newif($2, $5, NULL); }
     | IF exp ':' EOL stmts ELSE ':' EOL stmts END EOL { $$ = cll_newif($2, $5, $9); }
+    | SEND '(' exp ',' exp ',' exp ')' EOL              { $$ = cll_newsend(cll_lookup_transactions(), $3, $5, $7); }
     ;
 
 exp: NUMBER                             { $$ = cll_newintval($1); }

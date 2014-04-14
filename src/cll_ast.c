@@ -28,8 +28,11 @@ struct CLLSymbol *cll_lookup(int symboltype, const char *sym, int size){
 
         if (!sp->name){
             sp->name = strdup(sym);
-            if (symboltype == CLLSymbolInt){
+            if (symboltype == CLLSymbolInt || symboltype == CLLSymbolStop){
                 sp->data.value = 0;
+            } else if (symboltype == CLLSymbolSend){
+                sp->data.trans.trans = malloc(sizeof(struct CLLSend) * 1000);
+                sp->data.trans.current = 0;
             } else {
                 sp->data.array.array = malloc(sizeof(int) * size);
                 sp->data.array.size = size;
@@ -52,6 +55,9 @@ struct CLLSymbol *cll_lookup_array(const char *sym, int size){
     return cll_lookup(CLLSymbolArray, sym, size);
 }
 
+struct CLLSymbol *cll_lookup_transactions(){
+    return cll_lookup(CLLSymbolSend, "__transactions", 0); 
+}
 
 struct CLLNode *cll_alloc_node(){
     struct CLLNode *node = malloc(sizeof(struct CLLNode));
@@ -163,6 +169,15 @@ struct CLLNode *cll_newstop(int i){
     return a;
 }
 
+struct CLLNode *cll_newsend(struct CLLSymbol *t, struct CLLNode *address, struct CLLNode *value, struct CLLNode *gas){
+    struct CLLNode *s = cll_alloc_node();
+    s->nodetype = CLLNodeSend;
+    s->data.trans.trans = t;
+    s->data.trans.address = address;
+    s->data.trans.value = value;
+    s->data.trans.gas = gas;
+    return s;
+}
 
 struct CLLSymbol eval(struct CLLNode *a){
     int i;
@@ -344,6 +359,18 @@ struct CLLSymbol eval(struct CLLNode *a){
         case CLLNodeStop:
             result.symboltype = CLLSymbolStop;
             result.data.value = a->data.number;
+            break;
+
+        case CLLNodeSend:
+            {
+                result.symboltype = CLLSymbolSend;
+                struct CLLSend *send = &a->data.trans.trans->data.trans.trans[a->data.trans.trans->data.trans.current++];
+                send->address = eval(a->data.trans.address).data.value;
+                send->value = eval(a->data.trans.value).data.value;
+                send->gas = eval(a->data.trans.gas).data.value;
+                result.data.trans.trans = send;
+                break; 
+            }
             break;
 
 

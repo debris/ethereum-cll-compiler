@@ -20,6 +20,7 @@ int cll_line_number = 1;
 "=" |
 "[" |
 "]" |
+"," |
 ":"                     { return yytext[0]; }
 
 ">"                     { yylval.func = 1; return CMP; }
@@ -41,13 +42,14 @@ int cll_line_number = 1;
 "array"                 { return ARRAY; }
 "stop"                  { yylval.intval = cll_line_number; return STOP; }
 <<EOF>>                 { yylval.intval = cll_line_number; return END_OF_FILE; }
+"send"                  { return SEND; }
 
  /* names */
 [0-9]+                  { yylval.intval = atoi(yytext); return NUMBER; }
 
 [ \t]*                    {  /* ignore whitespace */ }
-[\n]                    { cll_line_number++; return EOL; }
-[a-z]*\.?[a-zA-Z0-9]*       { yylval.sval = strdup(yytext); return NAME; }
+[\n]                     { cll_line_number++; return EOL; }
+[a-zA-Z]*\.?[_a-zA-Z0-9]*       { yylval.sval = strdup(yytext); return NAME; }
 
 %%
 
