@@ -55,6 +55,8 @@ int main(int argc, char *argv[]){
             struct CLLSymbol symbol= eval(node);
             cll_print_symbol(&symbol);
             if (symbol.symboltype == CLLSymbolStop){
+                struct CLLSymbol *savedStop = cll_lookup_intval("stop");        // save stop position!
+                savedStop->data.value = symbol.data.value;
                 break;
             }
         }

@@ -91,7 +91,7 @@ struct CLLNode *cll_newstmts();
 struct CLLNode *cll_addstmt(struct CLLNode *stmts, struct CLLNode *newstmt);
 struct CLLNode *cll_newarray_access(struct CLLSymbol *s, struct CLLNode *position);
 struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position, struct CLLNode *v);
-struct CLLNode *cll_newstop();
+struct CLLNode *cll_newstop(int i);
 
 
 struct CLLSymbol eval(struct CLLNode *);

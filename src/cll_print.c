@@ -14,7 +14,7 @@ void cll_print_symbol(struct CLLSymbol *symbol){
             cll_print_symbol_array(symbol);
             break;
         case CLLSymbolStop:
-            printf("stop\n");
+            printf("stopped at line: %d\n", symbol->data.value);
             break;
     }
 }

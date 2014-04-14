@@ -1,6 +1,8 @@
 %{
 #include "../include/cll_compiler.h"
 #include "../include/tokens.h"
+
+int cll_line_number = 1;
 %}
 
 %%
@@ -37,14 +39,14 @@
 "end"                   { return END; }
 "while"                 { return WHILE; }
 "array"                 { return ARRAY; }
-"stop"                  { return STOP; }
-<<EOF>>                 { return END_OF_FILE; }
+"stop"                  { yylval.intval = cll_line_number; return STOP; }
+<<EOF>>                 { yylval.intval = cll_line_number; return END_OF_FILE; }
 
  /* names */
 [0-9]+                  { yylval.intval = atoi(yytext); return NUMBER; }
 
 [ \t]*                    {  /* ignore whitespace */ }
-[\n]                    { return EOL; }
+[\n]                    { cll_line_number++; return EOL; }
 [a-z]*\.?[a-zA-Z0-9]*       { yylval.sval = strdup(yytext); return NAME; }
 
 %%

@@ -156,9 +156,10 @@ struct CLLNode *cll_newarray_asgn(struct CLLSymbol *s, struct CLLNode *position,
     return a;
 }
 
-struct CLLNode *cll_newstop(){
+struct CLLNode *cll_newstop(int i){
     struct CLLNode *a = cll_alloc_node();
     a->nodetype = CLLNodeStop;
+    a->data.number = i;
     return a;
 }
 
@@ -272,11 +273,14 @@ struct CLLSymbol eval(struct CLLNode *a){
         case CLLNodeStmts:
             {
                 int type = -1;
+                struct CLLSymbol stmt_symbol;
                 for (i = 0; i < a->data.stmts.count && type != CLLSymbolStop; ++i){
-                    type = eval(a->data.stmts.stmts[i]).symboltype;
+                    stmt_symbol = eval(a->data.stmts.stmts[i]);
+                    type = stmt_symbol.symboltype;
                 }
                 if (type == CLLSymbolStop){
                     result.symboltype = CLLSymbolStop;
+                    result.data.value = stmt_symbol.data.value;
                 } else {
                     result.symboltype = CLLSymbolInt;
                     result.data.value = 1;
@@ -321,12 +325,15 @@ struct CLLSymbol eval(struct CLLNode *a){
         case CLLNodeWhile:
             {   
                 if (a->data.flow.tl){
-                    int type = -1;    
+                    int type = -1;
+                    struct CLLSymbol stmt_symbol;
                     while (eval(a->data.flow.cond).data.value != 0 && type != CLLSymbolStop) {
-                        type = eval(a->data.flow.tl).data.value;
+                        stmt_symbol = eval(a->data.flow.tl);
+                        type = stmt_symbol.symboltype;
                     }
                     if (type == CLLSymbolStop) {
                         result.symboltype = CLLSymbolStop;
+                        result.data.value = stmt_symbol.data.value;
                     } else {
                         result.symboltype = CLLSymbolInt;
                         result.data.value = 1;
@@ -336,7 +343,7 @@ struct CLLSymbol eval(struct CLLNode *a){
 
         case CLLNodeStop:
             result.symboltype = CLLSymbolStop;
-            result.data.value = 1;
+            result.data.value = a->data.number;
             break;
 
 

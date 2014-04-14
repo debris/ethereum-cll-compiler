@@ -136,7 +136,12 @@ void cll_json_final(const char *output_filename){
 
     	json_array_append(arrays, json_symbol);
         json_decref(json_symbol);
-    }
+    } 
+
+    struct CLLSymbol *saved_stop = cll_lookup_intval("stop");
+    json_t *json_stop_line = json_integer(saved_stop->data.value);
+    json_object_set(root, "stop", json_stop_line);
+    json_decref(json_stop_line);
 
     json_object_set(root, "arrays", arrays);
     json_decref(arrays);

@@ -24,7 +24,8 @@ int yylex(void);
 %start input
 %token <intval> NUMBER
 %token <sval> NAME 
-%token <void> '=' ':' '[' ']' IF STOP EOL END ELSE ARRAY WHILE END_OF_FILE
+%token <void> '=' ':' '[' ']' IF END ELSE ARRAY WHILE EOL
+%token <intval> END_OF_FILE STOP
 %type <node> input exp stmt stmts cond
 %nonassoc <func> CMP
 %left '+' '-'
@@ -48,7 +49,7 @@ stmts:                                  { $$ = cll_newstmts(); }
 
 stmt: exp EOL                           { $$ = $1;}
     | EOL stmt                          { $$ = $2;}
-    | END_OF_FILE                       { $$ = cll_newstop();}
+    | END_OF_FILE                       { $$ = cll_newstop($1);}
     | WHILE exp ':' EOL stmts END EOL   { $$ = cll_newwhile($2, $5); }
     | IF exp ':' EOL stmts END EOL      { $$ = cll_newif($2, $5, NULL); }
     | IF exp ':' EOL stmts ELSE ':' EOL stmts END EOL { $$ = cll_newif($2, $5, $9); }
@@ -69,7 +70,7 @@ exp: NUMBER                             { $$ = cll_newintval($1); }
    | NAME '=' ARRAY '(' NUMBER ')'      { $$ = cll_newref(cll_lookup_array($1, $5));}
    | NAME '[' exp ']'                   { $$ = cll_newarray_access(cll_lookup_array($1, 0), $3);}
    | NAME '[' exp ']' '=' exp           { $$ = cll_newarray_asgn(cll_lookup_array($1, 0), $3, $6);}
-   | STOP                               { $$ = cll_newstop();}
+   | STOP                               { $$ = cll_newstop($1);}
    ;
 
 cond: NUMBER                    { $$ = cll_newintval($1); }
