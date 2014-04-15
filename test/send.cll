@@ -1,0 +1,4 @@
+send(0, contract.balance, 0)
+contract.balance
+
+

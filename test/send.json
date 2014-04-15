@@ -1,0 +1,74 @@
+{
+    "code":
+    {   
+        "source" : "file", 
+        "file" : "test/send.cll"
+    },
+    "data":
+    {
+        "values": [
+        {
+            "name": "tx.datan",
+            "value": 101
+        }, {
+            "name": "tx.value",
+            "value": 300
+        }, {
+            "name": "tx.sender",
+            "value": 100
+        },{
+            "name": "contract.address",
+            "value": 100
+        },{
+            "name": "block.number",
+            "value": 100
+        },{
+            "name": "block.difficulty",
+            "value": 100
+        },{
+            "name": "block.timestamp",
+            "value": 100
+        },{
+            "name": "block.parenthash",
+            "value": 100
+        },{
+            "name": "block.basefee",
+            "value": 1
+        },{
+            "name": "feedowner",
+            "value" : 100
+        }
+        ],
+        "arrays": [
+        {
+            "name" : "tx.data",
+            "fields" : [
+                {
+                    "position" : 0,
+                    "value" : 166
+                },
+                {
+                    "position" : 1,
+                    "value" : 250
+                }
+            ]
+        }, {
+            "name" : "contract.storage",
+            "fields" : [
+            ]
+        }
+        ]
+    }
+}
+
+
+
+    
+
+
+
+
+
+
+
+
