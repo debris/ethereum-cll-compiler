@@ -1,9 +1,15 @@
+#include <stdbool.h>
 #pragma once
 
 struct CLLSend {
     int address;
     int value;
     int gas;
+};
+
+struct CLLField{
+    bool defined;
+    int value;
 };
 
 struct CLLSymbol {
@@ -14,7 +20,7 @@ struct CLLSymbol {
         int value;
         struct {
             int size;
-            int *array;
+            struct CLLField *array;
         } array;
         
         struct {

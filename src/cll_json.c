@@ -58,7 +58,8 @@ void cll_json_setup(char *json_text){
             int position_int = json_integer_value(position);
             int value_int = json_integer_value(value);
 
-            sym->data.array.array[position_int] = value_int;
+            sym->data.array.array[position_int].value = value_int;
+            sym->data.array.array[position_int].defined = true;
         }
     }
 
@@ -118,8 +119,10 @@ void cll_json_final(const char *output_filename){
 
     	json_t *fields = json_array();
     	for (j = 0; j < symbol->data.array.size; j++){
-    		int value = symbol->data.array.array[j];
-    		if (value != 0){
+    		//int value = symbol->data.array.array[j];
+    		struct CLLField field = symbol->data.array.array[j];
+                int value = field.value;
+                if (field.defined != 0){
     			json_t *node = json_object();
     			json_t *position = json_integer(j);
     			json_t *value_json = json_integer(value);

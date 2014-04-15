@@ -26,8 +26,8 @@ void cll_print_symbol_array(struct CLLSymbol *symbol){
     int i;
     printf("array(%d): ", symbol->data.array.size);
     for (i = 0; i < symbol->data.array.size; ++i) {
-        if (symbol->data.array.array[i] != 0){
-            printf("[%d] = %d, ", i, symbol->data.array.array[i]);
+        if (symbol->data.array.array[i].defined){
+            printf("[%d] = %d, ", i, symbol->data.array.array[i].value);
         }
     }
     printf("\n");

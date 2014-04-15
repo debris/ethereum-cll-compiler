@@ -34,7 +34,7 @@ struct CLLSymbol *cll_lookup(int symboltype, const char *sym, int size){
                 sp->data.trans.trans = malloc(sizeof(struct CLLSend) * 1000);
                 sp->data.trans.current = 0;
             } else {
-                sp->data.array.array = malloc(sizeof(int) * size);
+                sp->data.array.array = malloc(sizeof(struct CLLField) * size);
                 sp->data.array.size = size;
             }
             sp->symboltype = symboltype;
@@ -310,7 +310,7 @@ struct CLLSymbol eval(struct CLLNode *a){
             {
                 struct CLLSymbol eval_p = eval(a->data.array_access.position);
                 result.symboltype = CLLSymbolInt;
-                result.data.value = a->data.array_access.symbol->data.array.array[eval_p.data.value];
+                result.data.value = a->data.array_access.symbol->data.array.array[eval_p.data.value].value;
             }
             break;
         case CLLNodeArrayAsgn:
@@ -318,7 +318,8 @@ struct CLLSymbol eval(struct CLLNode *a){
                 struct CLLSymbol eval_p = eval(a->data.array_asgn.position);
                 struct CLLSymbol eval_v = eval(a->data.array_asgn.v);
                 result.symboltype = CLLSymbolInt;
-                result.data.value = a->data.array_asgn.symbol->data.array.array[eval_p.data.value] = eval_v.data.value;
+                result.data.value = a->data.array_asgn.symbol->data.array.array[eval_p.data.value].value = eval_v.data.value;
+                a->data.array_asgn.symbol->data.array.array[eval_p.data.value].defined = true;
             }
             break;
         case CLLNodeIf:
