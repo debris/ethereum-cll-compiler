@@ -47,7 +47,7 @@ void cll_json_setup(char *json_text){
         json_t *fields = json_object_get(data, "fields");
         const char *name_text = json_string_value(name);
 
-        struct CLLSymbol *sym = cll_lookup_array(name_text, 2000);
+        struct CLLSymbol *sym = cll_lookup_array(name_text, 10000);
         int j = 0;
         for (j = 0; j < json_array_size(fields); j++){
             json_t *field = json_array_get(fields, j);
