@@ -244,6 +244,9 @@ struct CLLSymbol eval(struct CLLNode *a){
                     case '8':
                         result.data.value = eval_l.data.value && eval_r.data.value ? 1 : 0;
                         break;
+                    case '9':
+                        result.data.value = eval_l.data.value != eval_r.data.value ? 1 : 0;
+                        break;
                     default: printf("internal error, no matching operator for ast %c\n", a->data.ast.op);
                 }
             }   break;
@@ -369,6 +372,10 @@ struct CLLSymbol eval(struct CLLNode *a){
                 send->value = eval(a->data.trans.value).data.value;
                 send->gas = eval(a->data.trans.gas).data.value;
                 result.data.trans.trans = send;
+
+                struct CLLSymbol *contract_balance = cll_lookup_intval("contract.balance");
+                contract_balance->data.value -= send->value;
+
                 break; 
             }
             break;

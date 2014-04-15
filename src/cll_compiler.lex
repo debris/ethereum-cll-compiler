@@ -33,6 +33,7 @@ int cll_line_number = 1;
 "or"                    { yylval.func = 7; return CMP; }
 "&&"                    { yylval.func = 8; return CMP; }
 "and"                   { yylval.func = 8; return CMP; }
+"!="                    { yylval.func = 9; return CMP; }
 
 
 "if"                    { return IF; }
